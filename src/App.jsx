@@ -1,27 +1,38 @@
 
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { decrement } from './redux/actions';
-import store from './redux/store';
+import { increment, decrement } from './redux/actions';
 
 const App = props => (
-  <button onClick={() => store.dispatch(decrement)}>{props.value}</button>
+  <div>
+    <button onClick={props.dispatchDecrement}>{props.showCountDec}</button>
+    <button onClick={props.dispatchIncrement}>{props.showCountInc}</button>
+  </div>
 );
 
-const render = () => {
-  console.log(store.getState());
-  ReactDOM.render(<App value={store.getState().decrement.count} />, document.getElementById('root'));
-};
-
-store.subscribe(render);
-
 App.propTypes = {
-  value: PropTypes.number,
+  showCountInc: PropTypes.number,
+  showCountDec: PropTypes.number,
+  dispatchDecrement: PropTypes.func.isRequired,
+  dispatchIncrement: PropTypes.func.isRequired,
 };
 
 App.defaultProps = {
-  value: 0,
+  showCountInc: 0,
+  showCountDec: 100,
 };
 
-export default App;
+const mapStateToComponent = state => ({
+  showCountInc: state.increment.count,
+  showCountDec: state.decrement.count,
+});
+
+const mapDispatchToComponent = dispatch => ({
+  dispatchIncrement: () => dispatch(increment),
+  dispatchDecrement: () => dispatch(decrement),
+});
+
+const ConnectedComponent = connect(mapStateToComponent, mapDispatchToComponent)(App);
+
+export default ConnectedComponent;
